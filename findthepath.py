@@ -11,3 +11,12 @@ LAND_COST = {
     "#": None # Wall/Obstacle
 }
 
+#adding the movement directions
+DIRECTIONS = [
+    (1, 0),  # Down
+    (-1, 0), # Up
+    (0, 1),  # Right
+    (0, -1)  # Left
+]
+
+
