@@ -19,4 +19,19 @@ DIRECTIONS = [
     (0, -1)  # Left
 ]
 
+def heuristic(a, b):
+    """Manhattan distance heuristic for the grid (no diagonal movement)
+    a, b are row, col tuples
+    """
+    (r1, c1) = a
+    (r2, c2) = b
+    return abs(r1 - r2) + abs(c1 - c2)
+
+
+def in_bounds(grid, position):
+    """Check if the position is within the grid bounds"""
+    rows = len(grid)
+    cols = len(grid[0])
+    (r, c) = position
+    return 0 <= r < rows and 0 <= c < cols
 
