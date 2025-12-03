@@ -119,3 +119,19 @@ def a_star_search(grid, start, goal):
                 heapq.heappush(open_set, (f_score[neighbor], counter, neighbor))
     # if we exit the loop without finding the goal
     return None  # No path found
+
+#print the grid with path
+def print_grid_with_path(grid, path):
+    """print the grid to the console, marking the path with '*' characters
+    starting with S and ending with G
+    """
+    path_set = set(path) if path is not None else set()
+    for r, row in enumerate(grid):
+        line = ""
+        for c, cell in enumerate(row):
+            if (r, c) in path_set:
+                line += "*"
+            else:
+                line += cell
+        print(line)
+
