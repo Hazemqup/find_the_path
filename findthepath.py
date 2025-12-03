@@ -1,9 +1,8 @@
 import heapq
 
-"""
-I will use A* algorithm to find the shortest path in a grid with different terrain costs.
-heapq is perfect for A* algorithm priority queue and it is fast for insertion and deletion.
-"""
+
+#I will use A* algorithm to find the shortest path in a grid with different terrain costs.
+#heapq is perfect for A* algorithm priority queue and it is fast for insertion and deletion.
 
 LAND_COST = {
     "S": 1, # Start
@@ -75,3 +74,48 @@ def reconstruct_path(came_from, current):
     path.reverse()
     return path
 
+def a_star_search(grid, start, goal):
+    """
+    A* pathfinding on the grid with diffrent terrain costs."""
+
+    #edge case: start is goal
+    if start == goal:
+        return [start]
+    
+    open_set = []
+    #heapq needs a counter to avoid comparison of nodes with same f_score
+    # "counter" will act as a tie-breaker
+
+    counter = 0
+
+    came_from = {}
+
+    g_score = {}
+    f_score = {}
+
+    g_score[start] = 0
+    f_score[start] = heuristic(start, goal)
+
+    heapq.heappush(open_set, (f_score[start], counter, start))
+
+    while open_set:
+        _, _, current = heapq.heappop(open_set)
+        
+        # If we reached the goal, reconstruct and return the path
+        if current == goal:
+            return reconstruct_path(came_from, current)
+        
+        for neighbor in get_neighbors(grid, current):
+            tentative_g = g_score[current] + cost_to_enter(grid, neighbor)
+
+            if neighbor not in g_score or tentative_g < g_score[neighbor]:
+                came_from[neighbor] = current
+                g_score[neighbor] = tentative_g
+                f_score[neighbor] = tentative_g + heuristic(neighbor, goal)
+                # Add neighbor to open set if not already present
+                # We use counter to ensure the heap order is maintained correctly
+                #push to the heap with updated f_score
+                counter += 1
+                heapq.heappush(open_set, (f_score[neighbor], counter, neighbor))
+    # if we exit the loop without finding the goal
+    return None  # No path found
