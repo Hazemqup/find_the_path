@@ -164,6 +164,10 @@ def main():
     print("2. No Possible Path")
     print("3. Terrain costs")
     print("4. Start equals Goal")
+
+    # Initialize start and goal to None
+    start = None
+    goal = None
     choice = input("Enter choice (1-4): ")
 
     # 1. the normal path
