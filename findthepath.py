@@ -1,8 +1,13 @@
+"""
+Docstring for findthepath
+"""
+
 import heapq
 
 
 #I will use A* algorithm to find the shortest path in a grid with different terrain costs.
 #heapq is perfect for A* algorithm priority queue and it is fast for insertion and deletion.
+
 
 LAND_COST = {
     "S": 1, # Start
@@ -14,12 +19,7 @@ LAND_COST = {
 }
 
 #adding the movement directions
-DIRECTIONS = [
-    (1, 0),  # Down
-    (-1, 0), # Up
-    (0, 1),  # Right
-    (0, -1)  # Left
-]
+DIRECTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)] #Down, Up, Right, Left
 
 def heuristic(a, b):
     """Manhattan distance heuristic for the grid (no diagonal movement)
@@ -36,6 +36,7 @@ def in_bounds(grid, position):
     cols = len(grid[0])
     (r, c) = position
     return 0 <= r < rows and 0 <= c < cols
+
 
 def is_passable(grid, position):
     """make sure if the position is passable to go (not a wall)"""
@@ -74,14 +75,16 @@ def reconstruct_path(came_from, current):
     path.reverse()
     return path
 
+
 def a_star_search(grid, start, goal):
     """
     A* pathfinding on the grid with diffrent terrain costs."""
 
     #edge case: start is goal
+
     if start == goal:
         return [start]
-    
+
     open_set = []
     #heapq needs a counter to avoid comparison of nodes with same f_score
     # "counter" will act as a tie-breaker
@@ -100,11 +103,12 @@ def a_star_search(grid, start, goal):
 
     while open_set:
         _, _, current = heapq.heappop(open_set)
-        
+
         # If we reached the goal, reconstruct and return the path
+
         if current == goal:
             return reconstruct_path(came_from, current)
-        
+
         for neighbor in get_neighbors(grid, current):
             tentative_g = g_score[current] + cost_to_enter(grid, neighbor)
 
@@ -115,12 +119,16 @@ def a_star_search(grid, start, goal):
                 # Add neighbor to open set if not already present
                 # We use counter to ensure the heap order is maintained correctly
                 #push to the heap with updated f_score
+
                 counter += 1
                 heapq.heappush(open_set, (f_score[neighbor], counter, neighbor))
     # if we exit the loop without finding the goal
+
     return None  # No path found
 
 #print the grid with path
+
+
 def print_grid_with_path(grid, path):
     """print the grid to the console, marking the path with '*' characters
     starting with S and ending with G
@@ -129,9 +137,98 @@ def print_grid_with_path(grid, path):
     for r, row in enumerate(grid):
         line = ""
         for c, cell in enumerate(row):
-            if (r, c) in path_set:
+            if (r, c) in path_set and cell not in ("S", "G"):
                 line += "*"
             else:
                 line += cell
         print(line)
 
+
+def find_start_and_goal(grid):
+    """Find the start (S) and goal (G) positions in the grid"""
+    start = None
+    goal = None
+    for r, row in enumerate(grid):
+        for c, cell in enumerate(row):
+            if cell == "S":
+                start = (r, c)
+            elif cell == "G":
+                goal = (r, c)
+    return start, goal
+
+
+def main():
+    """Main function to run the pathfinding"""
+    print("choose a test grid:")
+    print("1. Normal Path")
+    print("2. No Possible Path")
+    print("3. Terrain costs")
+    print("4. Start equals Goal")
+    choice = input("Enter choice (1-4): ")
+
+    # 1. the normal path
+
+    if choice == "1":
+        grid = [
+            list("S..#."),
+            list(".#..#"),
+            list("..#.."),
+            list("#...G"),
+        ]
+    # 2. no possible path
+
+    elif choice == "2":
+        grid = [
+            list("S#..#"),
+            list("##..#"),
+            list("..###"),
+            list("#...G"),
+        ]
+    # 3. terrain costs
+
+    elif choice == "3":
+        grid = [
+            list("S..~."),
+            list(".#..^"),
+            list("..#.."),
+            list("~...G"),
+        ]
+    # 4. start equals goal
+
+    elif choice == "4":
+        grid = [
+            list("S.."),
+            list("..."),
+            list("..."),
+        ]
+        start = (0, 0)
+        goal = (0, 0)
+    else:
+        print("Invalid choice.")
+        return
+    # For choice 4, we already set start & goal manually
+
+    if choice != "4":
+        start, goal = find_start_and_goal(grid)
+    # Safety check
+
+    if start is None or goal is None:
+        print("Start or Goal not found in grid.")
+        return
+    # Run A* search
+
+    path = a_star_search(grid, start, goal)
+
+    # Show results
+
+    if path:
+        print("\nPath found:")
+        print(path)
+        print("\nGrid with path:")
+        print_grid_with_path(grid, path)
+    else:
+        print("No path found.")
+
+
+if __name__ == "__main__":
+    main()
